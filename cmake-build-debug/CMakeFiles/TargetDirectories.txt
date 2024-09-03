@@ -1,0 +1,3 @@
+C:/Users/djkri/CLionProjects/lowks/cmake-build-debug/CMakeFiles/lowks.dir
+C:/Users/djkri/CLionProjects/lowks/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/djkri/CLionProjects/lowks/cmake-build-debug/CMakeFiles/rebuild_cache.dir
